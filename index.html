@@ -1,165 +1,109 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>NeoPhanton External — Cyberpunk Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeoPhantomExternal Evolve</title>
 <style>
-:root{
-  --bg: #0d0c1d;
-  --panel: rgba(255,255,255,0.05);
-  --accent: #9b59b6;
-  --accent-light: #a66aff;
-  --muted: #aaa;
-  --danger: #e74c3c;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:"Orbitron",sans-serif;background:linear-gradient(180deg,#0d0c1d,#1a1630 80%);color:#fff; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
-#toast{position:fixed; left:50%; transform:translateX(-50%); top:18px; background:rgba(0,0,0,0.65); padding:10px 18px; border-radius:12px; color:var(--accent); box-shadow:0 0 24px rgba(155,89,182,0.4); z-index:9999; display:none; font-weight:700;}
+/* ===== Grund-Styles ===== */
+body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden;}
+#bgCanvas{position:fixed;inset:0;z-index:0;}
+.site{position:relative;z-index:10;height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
 
-/* Container & Panels */
-.container{ min-height:100vh; display:flex; align-items:center; justify-content:center; gap:28px; padding:36px; flex-wrap:wrap; }
-.auth-panel{ width:420px; max-width:92%; border-radius:20px; padding:24px; background:rgba(255,255,255,0.05); backdrop-filter: blur(12px); border:1px solid rgba(155,89,182,0.15); box-shadow: 0 20px 60px rgba(155,89,182,0.1); position:relative; overflow:hidden; transition:0.3s;}
-.holo-header{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-.logo-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
-.holo-title{font-size:22px;color:var(--accent); font-weight:700;}
-.holo-sub{font-size:13px;color:var(--muted); margin-top:2px}
+/* ===== Login Section ===== */
+#loginSection{padding:2rem;border-radius:16px;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);max-width:400px;width:90%;margin:auto;}
+#loginSection input{width:100%;padding:0.6rem;margin-bottom:0.6rem;border-radius:8px;border:1px solid #0ff;background:transparent;color:white;outline:none;}
+#loginSection input:focus{box-shadow:0 0 12px #6ff;border-color:#6ff;}
+#loginSection button{width:100%;padding:0.7rem;border-radius:12px;margin-bottom:0.5rem;font-weight:600;cursor:pointer;transition:transform 0.2s ease;}
+#loginSection .loginBtn{background:#6ff;border:none;color:#000;}
+#loginSection .registerBtn{background:transparent;border:1px solid #6ff;color:#6ff;}
+#loginSection .resetBtn{background:transparent;border:1px solid red;color:red;}
+#loginMessage{display:block;margin-top:0.8rem;text-align:center;}
 
-/* Tabs */
-.tab-row{display:flex; gap:10px; margin:12px 0 8px}
-.tab{flex:1; padding:10px; border-radius:14px; text-align:center; cursor:pointer; color:#ccc; font-weight:700; font-size:14px; border:1px solid transparent; transition:0.25s}
-.tab.active{ background:rgba(155,89,182,0.1); border:1px solid rgba(155,89,182,0.2); color:var(--accent);}
+/* ===== Main Content ===== */
+#mainContent{display:none;}
+.card{backdrop-filter: blur(6px);background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06);padding:2.5rem;border-radius:16px;max-width:880px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,0.6);transition: transform 0.1s ease-out;}
+h1{margin:0 0 0.5rem 0;font-size:2.2rem;}
+p{margin:0 0 1rem 0;color:rgba(255,255,255,0.78);}
+.controls{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;}
+.btn{display:inline-flex;align-items:center;gap:0.6rem;padding:0.7rem 1rem;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;cursor:pointer;transition: transform .18s ease, box-shadow .18s ease;}
+.btn:hover{transform: translateY(-4px) scale(1.05);box-shadow:0 10px 30px rgba(0,0,0,0.6);}
+.btn.primary{background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));}
+.btn.ghost{border:1px solid rgba(255,255,255,0.06);background:transparent;}
+.links-row{display:flex;gap:1rem;align-items:center;margin-top:1rem;flex-wrap:wrap;}
+.link-small{color:rgba(255,255,255,0.85);text-decoration:none;padding:0.35rem 0.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.03);transition: background .12s ease, transform .12s ease;}
+.link-small:hover{transform:translateY(-3px);background:rgba(255,255,255,0.04);}
 
-/* Inputs & Buttons */
-.form-row{display:flex;flex-direction:column; gap:12px; margin-top:8px}
-.input{ padding:14px 16px; border-radius:12px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); color:#fff; outline:none; font-size:14px; transition:0.2s;}
-.input:focus{ box-shadow:0 0 18px rgba(155,89,182,0.2); border-color: rgba(155,89,182,0.25); }
-.input::placeholder{ color: rgba(255,255,255,0.35); font-weight:600 }
-.btn{ margin-top:8px; width:100%; padding:14px; border-radius:14px; border:none; cursor:pointer; font-weight:900; background:linear-gradient(90deg,#9b59b6,#a66aff); color:#fff; box-shadow:0 12px 36px rgba(155,89,182,0.2); transition:0.25s}
-.btn:hover{ box-shadow:0 16px 48px rgba(155,89,182,0.3); transform:translateY(-2px);}
-.small{ padding:8px 14px; border-radius:12px; background:transparent; border:1px solid rgba(255,255,255,0.05); color:var(--accent); cursor:pointer; transition:0.2s;}
-.small:hover{ background:rgba(155,89,182,0.08);}
+/* ===== Avatar & Pulse ===== */
+.top-left{position:fixed;left:18px;top:18px;z-index:20;display:flex;align-items:center;gap:0.6rem;}
+.avatar-wrap{width:64px;height:64px;border-radius:50%;display:inline-grid;place-items:center;position:relative;}
+.avatar{width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;border:3px solid rgba(255,255,255,0.06);}
+.pulse{position:absolute;inset:-6px;border-radius:50%;z-index:-1;background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%{transform:scale(0.9);opacity:0.5;}50%{transform:scale(1.15);opacity:0.12;}100%{transform:scale(0.9);opacity:0.5;}}
 
-/* Preview */
-.preview{ width:880px; max-width:92%; min-height:520px; position:relative; border-radius:20px; padding:20px; background: rgba(255,255,255,0.03); backdrop-filter: blur(14px); border:1px solid rgba(155,89,182,0.08); box-shadow:0 40px 140px rgba(155,89,182,0.05); display:none; transition:0.3s;}
-.card-wrap{ margin-top:24px; display:flex; justify-content:center; align-items:center; position:relative }
-.card{ width:100%; max-width:980px; border-radius:16px; padding:20px; position:relative; background: rgba(255,255,255,0.02); backdrop-filter:blur(8px); border:2px solid rgba(155,89,182,0.08); overflow:hidden; transition:0.3s;}
-.card img{ width:100%; height:auto; border-radius:12px; display:block; transition:transform 0.5s, box-shadow 0.4s;}
-.card:hover img{ transform:scale(1.02); box-shadow:0 12px 36px rgba(155,89,182,0.2); }
+/* ===== Announcement ===== */
+.announce{position:fixed;left:50%;top:-60px;transform:translateX(-50%);z-index:19;padding:0.55rem 1rem;border-radius:999px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.05);font-weight:600;pointer-events:auto;transition: all 0.5s ease;}
+.announce a{color:#6ff;text-decoration:underline;}
 
-/* Scanlines & Glow */
-.neon-frame{ position:absolute; inset:12px; pointer-events:none }
-.scan-line{ position:absolute; left:-15%; width:130%; height:2px; background:linear-gradient(90deg, transparent, rgba(155,89,182,0.9), transparent); opacity:0.8; filter:blur(6px);}
-.scan-line.l1{ animation: scan 4s linear infinite; }
-.scan-line.l2{ animation: scan 4.8s linear infinite reverse; top:30%; }
-.scan-line.l3{ animation: scan 5.4s linear infinite; top:60%; }
-@keyframes scan{ 0%{transform:translateY(-20%)}100%{transform:translateY(120%)} }
-.corner-glow{ position:absolute; width:24%; height:24%; pointer-events:none }
-.corner-glow.tl{ left:-6%; top:-6%; background: radial-gradient(circle at 10% 10%, rgba(155,89,182,0.22), transparent 25%); animation: glowPulse 3s infinite }
-.corner-glow.br{ right:-6%; bottom:-6%; background: radial-gradient(circle at 90% 90%, rgba(155,89,182,0.18), transparent 30%); animation: glowPulse 3.6s infinite }
-@keyframes glowPulse{0%{opacity:0.5; transform:scale(.98)}50%{opacity:1; transform:scale(1.02)}100%{opacity:0.5; transform:scale(.98)}}
-
-/* Undetected */
-.undetected{ position:fixed; top:18px; right:18px; z-index:100; display:flex; gap:10px; align-items:center; padding:10px 14px; border-radius:16px; background:rgba(0,0,0,0.4); border:1px solid rgba(155,89,182,0.1) }
-.ud-dot{ width:14px; height:14px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); animation: pulse 1.6s infinite alternate }
-@keyframes pulse{0%{transform:scale(1);opacity:.75}50%{transform:scale(1.4);opacity:1}100%{transform:scale(1);opacity:.75}}
-
-/* Access Screen */
-.access-screen{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at center, rgba(155,89,182,0.1), rgba(0,0,0,0.95)); z-index:9998; opacity:0; pointer-events:none; transition:opacity .4s; }
-.access-screen.show{ opacity:1; pointer-events:auto }
-.access-box{ background:rgba(255,255,255,0.02); backdrop-filter:blur(12px); padding:28px 38px; border-radius:12px; border:1px solid rgba(155,89,182,0.1); box-shadow: 0 40px 120px rgba(155,89,182,0.06); text-align:center}
-.access-box h2{ color:var(--accent); font-size:34px; margin:0 0 10px; letter-spacing:2px; text-shadow:0 0 18px rgba(155,89,182,0.2) }
-.access-box p{ margin:0; color:#dfffdc }
+/* ===== Status ===== */
+.status{position:fixed;top:18px;right:18px;display:flex;align-items:center;gap:0.5rem;font-weight:600;pointer-events:none;}
+.status-circle{width:14px;height:14px;border-radius:50%;background:green;animation:pulseStatus 1.8s ease-in-out infinite;}
+@keyframes pulseStatus{0%{transform:scale(0.8);opacity:0.5}50%{transform:scale(1.2);opacity:0.9}100%{transform:scale(0.8);opacity:0.5}}
 </style>
 </head>
 <body>
 
-<div id="toast"></div>
+<canvas id="bgCanvas"></canvas>
 
-<div id="accessScreen" class="access-screen" aria-hidden="true">
-  <div class="access-box">
-    <h2>ACCESS GRANTED</h2>
-    <p>NeoPhantonExternal v1.00 DEV</p>
+<div class="top-left">
+  <div class="avatar-wrap" title="Profil">
+    <img class="avatar" id="profileGif" src="./Profil.gif" alt="profile gif">
+    <div class="pulse"></div>
   </div>
 </div>
 
-<div class="container">
-  <!-- Auth Panel -->
-  <div class="auth-panel" id="authPanel">
-    <div class="holo-header">
-      <div class="logo-dot"></div>
-      <div>
-        <div class="holo-title">NeoPhanton External</div>
-        <div class="holo-sub">Secure cyber-access terminal</div>
+<div class="status" id="statusIndicator">
+  <div class="status-circle"></div>
+  <div id="statusText">Undetect</div>
+</div>
+
+<div class="announce" id="announce">NeoPhantonExternal v1 Evolve Edition <a href="https://os5.mycloud.com/action/share/82c2895b-4ee8-4054-8c8c-a9ccb853c6a3">Hol's dir jetzt</a></div>
+
+<main class="site">
+  <div id="loginSection">
+    <h2 style="color:#6ff;text-align:center;margin-bottom:1rem;">Login / Registrierung</h2>
+    <input id="emailInput" type="email" placeholder="E-Mail">
+    <input id="passwordInput" type="password" placeholder="Passwort">
+    <button class="loginBtn" id="loginBtn">Login</button>
+    <button class="registerBtn" id="registerBtn">Registrieren</button>
+    <button class="resetBtn" id="resetBtn">Passwort zurücksetzen</button>
+    <span id="loginMessage"></span>
+  </div>
+
+  <div id="mainContent">
+    <div class="card">
+      <h1>NeoPhantomExternal Evolve v1</h1>
+      <div class="controls">
+        <a id="downloadBtn" class="btn primary" href="https://os5.mycloud.com/action/share/82c2895b-4ee8-4054-8c8c-a9ccb853c6a3" download>↓ Download</a>
+        <a class="btn ghost" href="https://discord.com/invite/UGqxpbrcux" target="_blank">Discord</a>
+        <a class="btn ghost" href="https://www.youtube.com/@gigarazorlp1911" target="_blank">YouTube</a>
+      </div>
+      <div class="links-row">
+        <a class="link-small" href="#features">ESP,Aimbot,GUI,Line,Skeletton</a>
+        <a class="link-small" href="#faq">For DEV</a>
+        <a class="link-small" href="#contact">Discord Support</a>
       </div>
     </div>
-
-    <div class="tab-row">
-      <div class="tab active" data-tab="login">LOGIN</div>
-      <div class="tab" data-tab="signup">REGISTRIEREN</div>
-      <div class="tab" data-tab="reset">PASSWORT</div>
-    </div>
-
-    <div id="loginForm" class="form-row">
-      <input id="loginEmail" class="input" placeholder="E-Mail" type="email" />
-      <input id="loginPass" class="input" placeholder="Passwort" type="password" />
-      <button id="btnLogin" class="btn">ANMELDEN</button>
-      <div id="loginStatus" class="note"></div>
-    </div>
-
-    <div id="signupForm" class="form-row" style="display:none">
-      <input id="regEmail" class="input" placeholder="E-Mail" type="email" />
-      <input id="regPass" class="input" placeholder="Passwort" type="password" />
-      <input id="regPass2" class="input" placeholder="Passwort wiederholen" type="password" />
-      <button id="btnSignup" class="btn">REGISTRIEREN</button>
-      <div id="signupStatus" class="note"></div>
-    </div>
-
-    <div id="resetForm" class="form-row" style="display:none">
-      <input id="resetEmail" class="input" placeholder="E-Mail zum Zurücksetzen" type="email" />
-      <button id="btnReset" class="btn">PASSWORT ZURÜCKSETZEN</button>
-      <div id="resetStatus" class="note"></div>
-    </div>
   </div>
+</main>
 
-  <!-- Preview -->
-  <div class="preview" id="mainPreview">
-    <div class="card-wrap">
-      <div class="card card-anim">
-        <div class="card-viewport">
-          <img id="mainImage" src="NeonPhanton.jpg" alt="NeoPhanton">
-        </div>
-        <div class="neon-frame">
-          <div class="scan-line l1"></div>
-          <div class="scan-line l2"></div>
-          <div class="scan-line l3"></div>
-          <div class="corner-glow tl"></div>
-          <div class="corner-glow br"></div>
-        </div>
-        <div class="overlay"><button class="btn" onclick="downloadFile()">DOWNLOAD</button></div>
-      </div>
-    </div>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-    <!-- Links -->
-    <div class="links" style="margin-top:20px; display:flex; gap:16px; justify-content:center;">
-      <a id="discordLink" href="https://discord.com/invite/UGqxpbrcux" target="_blank">Discord</a>
-      <a id="ytLink" href="https://www.youtube.com/@gigarazorlp1911" target="_blank">YouTube</a>
-    </div>
-  </div>
-</div>
-
-<!-- Undetected -->
-<div class="undetected" id="udDetect">
-  <div class="ud-dot" id="udDot"></div>
-  <div id="udText" style="font-weight:800;color:var(--accent)">Undetected: ACTIVE</div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script>
-// Firebase
-const firebaseConfig = {
+// ===== Firebase Setup =====
+var firebaseConfig = {
   apiKey: "AIzaSyA_-CKZliZyJoC7GrerVprjJoPHDxEFw1A",
   authDomain: "nequisai.firebaseapp.com",
   projectId: "nequisai",
@@ -169,143 +113,117 @@ const firebaseConfig = {
   measurementId: "G-9888Y0RM2K"
 };
 firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+var auth = firebase.auth();
 
-// Toast
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(window._toastTimer); window._toastTimer=setTimeout(()=>t.style.display='none',3500); }
+// ===== DOM Elemente =====
+var emailInput = document.getElementById('emailInput');
+var passwordInput = document.getElementById('passwordInput');
+var loginMessage = document.getElementById('loginMessage');
+var loginSection = document.getElementById('loginSection');
+var mainContent = document.getElementById('mainContent');
+var statusText = document.getElementById('statusText');
+var statusIndicator = document.getElementById('statusIndicator');
 
-// Tabs
-document.querySelectorAll('.tab').forEach(tab=>{
-    tab.addEventListener('click',()=>{
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        tab.classList.add('active');
-        const which=tab.dataset.tab;
-        document.getElementById('loginForm').style.display=which==='login'?'flex':'none';
-        document.getElementById('signupForm').style.display=which==='signup'?'flex':'none';
-        document.getElementById('resetForm').style.display=which==='reset'?'flex':'none';
-        ['loginStatus','signupStatus','resetStatus'].forEach(id=>document.getElementById(id).textContent='');
-    });
-});
-
-// Auth State
-auth.onAuthStateChanged(user=>{
-    const authPanel=document.getElementById('authPanel');
-    const mainPreview=document.getElementById('mainPreview');
-    const ud=document.getElementById('udDetect');
-    if(user){
-        authPanel.style.display='none';
-        mainPreview.style.display='block';
-        ud.style.display='flex';
-        startUndetected();
-    }else{
-        authPanel.style.display='block';
-        mainPreview.style.display='none';
-        ud.style.display='none';
-        stopUndetected();
-    }
-});
-
-// Undetected
-let udInterval=null;
-function startUndetected(){
-    const dot=document.getElementById('udDot');
-    if(udInterval) clearInterval(udInterval);
-    udInterval=setInterval(()=>{
-        dot.style.transform='scale(1.4)';
-        setTimeout(()=>dot.style.transform='scale(1)',800);
-    },1600);
-}
-function stopUndetected(){ if(udInterval) clearInterval(udInterval); document.getElementById('udDot').style.transform='scale(1)'; }
-
-// Access Screen
-function showAccessScreen(){
-    const scr=document.getElementById('accessScreen');
-    scr.classList.add('show');
-    setTimeout(()=>scr.classList.remove('show'),2500);
-    showToast('NeoPhantonExternal v1.00 DEV');
+// ===== Landingpage anzeigen =====
+function showMainContent(){
+    loginSection.style.display='none';
+    mainContent.style.display='block';
+    initAnimations();
 }
 
-// Download von externer URL
-function downloadFile(){
-    const link = document.createElement('a');
-    link.href = 'https://os5.mycloud.com/action/share/82c2895b-4ee8-4054-8c8c-a9ccb853c6a3'; // <- externe URL
-    link.download = '';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('Download gestartet');
+// ===== Firebase Fehler auf Deutsch =====
+function firebaseErrorMessage(error) {
+    switch(error.code){
+        case "auth/invalid-email": return "Ungültige E-Mail-Adresse.";
+        case "auth/user-disabled": return "Benutzerkonto wurde deaktiviert.";
+        case "auth/user-not-found": return "Benutzer nicht gefunden.";
+        case "auth/wrong-password": return "Falsches Passwort.";
+        case "auth/email-already-in-use": return "E-Mail wird bereits verwendet.";
+        case "auth/weak-password": return "Passwort zu schwach (mindestens 6 Zeichen).";
+        case "auth/too-many-requests": return "Zu viele Versuche. Bitte später erneut versuchen.";
+        case "auth/network-request-failed": return "Netzwerkfehler. Überprüfe deine Verbindung.";
+        default: return "Fehler: " + error.message;
+    }
 }
 
-// Login
-document.getElementById('btnLogin').addEventListener('click', ()=>{
-    const email = document.getElementById('loginEmail').value;
-    const pass = document.getElementById('loginPass').value;
-    const status = document.getElementById('loginStatus');
+// ===== Login =====
+document.getElementById('loginBtn').onclick = function(){
+    var email = emailInput.value.trim();
+    var password = passwordInput.value;
+    auth.signInWithEmailAndPassword(email, password)
+        .then(()=>{loginMessage.style.color="#6ff"; loginMessage.innerText="Erfolgreich eingeloggt!"; showMainContent();})
+        .catch(function(error){loginMessage.style.color="red"; loginMessage.innerText=firebaseErrorMessage(error);});
+}
 
-    if(!email || !pass){
-        showToast("Bitte E-Mail und Passwort eingeben");
-        return;
-    }
+// ===== Registrierung =====
+document.getElementById('registerBtn').onclick = function(){
+    var email = emailInput.value.trim();
+    var password = passwordInput.value;
+    auth.createUserWithEmailAndPassword(email, password)
+        .then(()=>{loginMessage.style.color="#6ff"; loginMessage.innerText="Registrierung erfolgreich!"; showMainContent();})
+        .catch(function(error){loginMessage.style.color="red"; loginMessage.innerText=firebaseErrorMessage(error);});
+}
 
-    auth.signInWithEmailAndPassword(email, pass)
-        .then(userCredential=>{
-            showAccessScreen();
-        })
-        .catch(error=>{
-            console.error(error);
-            status.textContent = error.message;
-            showToast("Login fehlgeschlagen");
-        });
-});
-
-// Signup
-document.getElementById('btnSignup').addEventListener('click', ()=>{
-    const email = document.getElementById('regEmail').value;
-    const pass = document.getElementById('regPass').value;
-    const pass2 = document.getElementById('regPass2').value;
-    const status = document.getElementById('signupStatus');
-
-    if(!email || !pass || !pass2){
-        showToast("Alle Felder ausfüllen");
-        return;
-    }
-    if(pass !== pass2){
-        showToast("Passwörter stimmen nicht überein");
-        return;
-    }
-
-    auth.createUserWithEmailAndPassword(email, pass)
-        .then(userCredential=>{
-            showAccessScreen();
-        })
-        .catch(error=>{
-            console.error(error);
-            status.textContent = error.message;
-            showToast("Registrierung fehlgeschlagen");
-        });
-});
-
-// Passwort zurücksetzen
-document.getElementById('btnReset').addEventListener('click', ()=>{
-    const email = document.getElementById('resetEmail').value;
-    const status = document.getElementById('resetStatus');
-
-    if(!email){
-        showToast("Bitte E-Mail eingeben");
-        return;
-    }
-
+// ===== Passwort zurücksetzen =====
+document.getElementById('resetBtn').onclick = function(){
+    var email = emailInput.value.trim();
     auth.sendPasswordResetEmail(email)
-        .then(()=>{
-            showToast("Reset-Mail gesendet");
-        })
-        .catch(error=>{
-            console.error(error);
-            status.textContent = error.message;
-            showToast("Fehler beim Zurücksetzen");
-        });
-});
+        .then(()=>{loginMessage.style.color="#6ff"; loginMessage.innerText="Passwort zurückgesetzt. Prüfe deine E-Mails."})
+        .catch(function(error){loginMessage.style.color="red"; loginMessage.innerText=firebaseErrorMessage(error);});
+}
+
+// ===== Auth Listener =====
+auth.onAuthStateChanged(function(user){ if(user){ showMainContent(); }});
+
+// ===== Status: fest auf "Undetect" =====
+statusText.innerText = "Undetect";
+statusIndicator.className = "status"; // nur "Undetect", keine Änderung
+
+// ===== Animationen: Partikel & 3D Card + Button Schwappen =====
+function initAnimations(){
+    // Partikel Hintergrund
+    const canvas=document.getElementById('bgCanvas');
+    const ctx=canvas.getContext('2d');
+    let w=canvas.width=innerWidth,h=canvas.height=innerHeight;
+    window.addEventListener('resize',()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight;resetDots();});
+    const mouse={x:w/2,y:h/2};
+    window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+    function rand(min,max){return Math.random()*(max-min)+min;}
+    class Dot{
+        constructor(){this.x=rand(0,w);this.y=rand(0,h);this.r=rand(0.8,2.6);this.vx=rand(-0.3,0.3);this.vy=rand(-0.3,0.3);this.alpha=rand(0.3,0.95);this.color=`hsl(${Math.random()*360},80%,80%)`;}
+        move(){this.x+=this.vx;this.y+=this.vy;if(this.x<-10)this.x=w+10;if(this.x>w+10)this.x=-10;if(this.y<-10)this.y=h+10;if(this.y>h+10)this.y=-10;}
+        draw(){ctx.beginPath();ctx.shadowBlur=6;ctx.shadowColor=this.color;ctx.fillStyle=this.color.replace('hsl','hsla').replace(')',`,`+this.alpha+')');ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+    }
+    let dots=[];
+    function resetDots(){dots=new Array(Math.floor((w*h)/120000)*30+30).fill().map(()=>new Dot());}
+    function connect(){for(let i=0;i<dots.length;i++){for(let j=i+1;j<dots.length;j++){const a=dots[i],b=dots[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<80){ctx.beginPath();ctx.strokeStyle=`rgba(255,255,255,${0.08*(1-dist/110)})`;ctx.lineWidth=1;ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}}}
+    function applyMouse(){for(const d of dots){const dx=mouse.x-d.x,dy=mouse.y-d.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<140){let force=(140-dist)/140*0.6;d.vx+=dx*0.0005*force;d.vy+=dy*0.0005*force;}}}
+    let _f=0;
+    function tick(){ctx.clearRect(0,0,w,h);for(const d of dots){d.move();d.draw();}if((_f++%3)===0)connect();applyMouse();requestAnimationFrame(tick);}
+    resetDots();tick();
+
+    // 3D Card
+    const card=document.querySelector('.card');let targetX=0,targetY=0,currentX=0,currentY=0;
+    window.addEventListener('mousemove',e=>{const cx=w/2,cy=h/2;targetX=(e.clientX-cx)/cx*12;targetY=-(e.clientY-cy)/cy*12;});
+    function animateCard(){currentX+=(targetX-currentX)*0.08;currentY+=(targetY-currentY)*0.08;card.style.transform=`rotateY(${currentX}deg) rotateX(${currentY}deg) translateZ(0)`;requestAnimationFrame(animateCard);}
+    animateCard();
+
+    // Download Shortcut
+    const downloadBtn=document.getElementById('downloadBtn');
+    document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='d')downloadBtn.click();});
+
+    // Announcement Slide
+    const ann=document.getElementById('announce');setTimeout(()=>{ann.style.top='20px';ann.style.opacity='1';},400);
+
+    // ===== 3D Schwappen für alle Buttons =====
+    const buttons = document.querySelectorAll('.btn, #loginSection button');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => { btn.style.transform = 'scale(1.08) rotateX(2deg) rotateY(-2deg)'; btn.style.transition = 'transform 0.2s ease'; });
+        btn.addEventListener('mouseleave', () => { btn.style.transform = 'scale(1) rotateX(0deg) rotateY(0deg)'; });
+        btn.addEventListener('mousedown', () => { btn.style.transform = 'scale(0.95) rotateX(0deg) rotateY(0deg)'; btn.style.transition = 'transform 0.05s ease'; });
+        btn.addEventListener('mouseup', () => { btn.style.transform = 'scale(1.08) rotateX(2deg) rotateY(-2deg)'; btn.style.transition = 'transform 0.1s ease'; });
+    });
+}
 </script>
 </body>
 </html>
-
